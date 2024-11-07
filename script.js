@@ -4,10 +4,23 @@ apiUrl = "https://newsapi.org/v2/everything?q=";
 window.addEventListener("load", () => fetchNews("India"));
 
 async function fetchNews(query) {
-  const res = await fetch(`${apiUrl}${query}&apiKey=${apiKey}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`${apiUrl}${query}&apiKey=${apiKey}`);
 
-  bindDAta(data.articles.slice(0, 30));
+    if (!res.ok) {
+      throw new Error(`API request failed with status ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (!data.articles) {
+      throw new Error("No articles found in the response.");
+    }
+
+    bindDAta(data.articles.slice(0, 30));
+  } catch (error) {
+    console.error("Error fetching news:", error);
+  }
 }
 function bindDAta(articles) {
   var newsSection = document.getElementById("news-Section");
